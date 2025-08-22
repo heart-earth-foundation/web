@@ -37,7 +37,7 @@ export default function WalletPage() {
               <ArrowRight className="h-6 w-6 text-primary mx-auto" />
               <div className="text-center space-y-2">
                 <div className="font-mono text-xs bg-red-100 dark:bg-red-900/20 p-1 rounded">
-                  heart_123abc...
+                  heart123abc...
                 </div>
                 <div className="font-mono text-xs bg-green-100 dark:bg-green-900/20 p-1 rounded">
                   12D3KooWxyz...
@@ -58,7 +58,7 @@ export default function WalletPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="font-mono text-sm bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                heart_abc123...
+                heartabc123...
               </div>
               <ul className="space-y-1 text-sm">
                 <li>• Derivation: BIP44 path m/44'/0'/account/0/index</li>
@@ -179,7 +179,7 @@ export default function WalletPage() {
               <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md font-mono text-sm">
                 <div className="mb-2">username.earth resolves to:</div>
                 <div className="ml-4 space-y-1 text-xs">
-                  <div>• Heart: heart_abc123... (ART tokens)</div>
+                  <div>• Heart: heartabc123... (ART tokens)</div>
                   <div>• Earth: 12D3KooWxyz... (P2P network)</div>
                 </div>
               </div>
