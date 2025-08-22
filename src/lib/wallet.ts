@@ -47,9 +47,9 @@ export class SecureWallet {
     const peerHash = this.deterministicHash(accountSeed + 'peer')
     const peerAddress = '12D3KooW' + peerHash.substring(0, 44)
     
-    // Generate blockchain address with 'art' prefix
+    // Generate blockchain address with 'heart' prefix
     const blockchainHash = this.deterministicHash(accountSeed + 'blockchain')
-    const blockchainAddress = 'art' + blockchainHash.substring(0, 27)
+    const blockchainAddress = 'heart' + blockchainHash.substring(0, 27)
     
     return {
       peerAddress,
