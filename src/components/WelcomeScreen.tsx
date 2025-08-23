@@ -42,7 +42,7 @@ export default function WelcomeScreen({ onScreenChange }: WelcomeScreenProps) {
         </div>
 
         <div className="text-sm text-muted-foreground space-y-2 border-t pt-6">
-          <p>Live Network: <span className="font-mono">157.245.208.60:4001</span></p>
+          <p>Live Network: <span className="font-mono">P2P Bootstrap Node</span></p>
           <p>Channel: <span className="font-mono">/art/dev/general/v1</span></p>
         </div>
         </div>
