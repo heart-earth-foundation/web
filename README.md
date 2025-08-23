@@ -27,7 +27,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Based on the Heart Earth Rust implementation:
 - **Wallet**: HD wallet with secp256k1 (blockchain) + ed25519 (P2P) derivation
 - **P2P**: libp2p networking with Gossipsub + Kademlia DHT
-- **Bootstrap**: Connects to live network at `157.245.208.60:4001`
+- **Bootstrap**: Connects to P2P network via WebSocket
 
 ## Flow
 
