@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { WalletData } from '@/app/page'
-import { SecureWallet } from '@/lib/wallet'
+import { SecureWallet } from '@/lib/secure_wallet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { debugIndexedDB, listAllDatabases } from '@/lib/debug-indexeddb'
 
 interface LoginScreenProps {
   onLogin: (data: WalletData) => void
@@ -15,14 +16,19 @@ interface LoginScreenProps {
 }
 
 export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
-  const [walletName, setWalletName] = useState('default')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [wallet] = useState(() => new SecureWallet())
 
-  const generateAddresses = (mnemonic: string) => {
-    // Use deterministic address generation
-    return SecureWallet.generateAddresses(mnemonic, 0, 0)
+  const generateAddresses = async (mnemonic: string) => {
+    // Create account using WASM wallet 
+    await SecureWallet.initWASM()
+    const account = await wallet.createAccount(mnemonic, 0, 0)
+    return {
+      peerAddress: account.peer_id,
+      blockchainAddress: account.blockchain_address
+    }
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -31,29 +37,32 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
     setLoading(true)
 
     try {
-      // Simulate wallet loading delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // Simulate checking wallet existence and password validation
-      if (Math.random() > 0.7) {
-        setError('Wallet not found or invalid password')
+      // Check if wallet exists first
+      const exists = await wallet.walletExists()
+      if (!exists) {
+        setError('No wallet found. Please create a wallet first.')
         setLoading(false)
         return
       }
 
-      // In production, decrypt and load the actual mnemonic from storage
-      const simulatedMnemonic = 'abandon ability able about above absent absorb abstract absurd abuse access accident'
-      const addresses = generateAddresses(simulatedMnemonic)
-
+      // Try to unlock wallet with password
+      const account = await wallet.unlockWallet(password)
+      
       onLogin({
-        name: walletName,
-        mnemonic: simulatedMnemonic,
+        name: 'main',
+        mnemonic: account.blockchain_address, // Don't expose mnemonic in state
         password,
-        peerAddress: addresses.peerAddress,
-        blockchainAddress: addresses.blockchainAddress
+        peerAddress: account.peer_id,
+        blockchainAddress: account.blockchain_address
       })
-    } catch (err) {
-      setError('Failed to load wallet')
+    } catch (err: any) {
+      if (err.message?.includes('Invalid password')) {
+        setError('Invalid password')
+      } else if (err.message?.includes('No wallet found')) {
+        setError('No wallet found. Please create a wallet first.')
+      } else {
+        setError('Failed to load wallet: ' + (err.message || 'Unknown error'))
+      }
     } finally {
       setLoading(false)
     }
@@ -69,16 +78,6 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="wallet-name">Wallet Name</Label>
-                <Input
-                  id="wallet-name"
-                  type="text"
-                  value={walletName}
-                  onChange={(e) => setWalletName(e.target.value)}
-                  required
-                />
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -98,6 +97,17 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               )}
 
               <div className="flex gap-3">
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={() => {
+                    debugIndexedDB()
+                    listAllDatabases()
+                  }}
+                  disabled={loading}
+                >
+                  Debug DB
+                </Button>
                 <Button 
                   type="button" 
                   variant="outline"

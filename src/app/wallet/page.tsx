@@ -251,8 +251,8 @@ export default function WalletPage() {
               <div>
                 <h4 className="font-semibold mb-2">P2P Network</h4>
                 <ul className="space-y-1 text-sm">
-                  <li>• Bootstrap: 157.245.208.60:4001 (TCP)</li>
-                  <li>• WebSocket: ws://157.245.208.60:4001/ws</li>
+                  <li>• Bootstrap: p2p.heartearth.art (TCP)</li>
+                  <li>• WebSocket: wss://p2p.heartearth.art/ws</li>
                   <li>• Channel: /art/dev/general/v1</li>
                   <li>• Status: Live and accepting connections</li>
                   <li>• Protocol: libp2p with gossipsub messaging</li>

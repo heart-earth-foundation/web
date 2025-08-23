@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { WalletData } from '@/app/page'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { P2PClient, createP2PClient } from '@/lib/p2p-client'
 
 interface DashboardScreenProps {
   walletData: WalletData | null
@@ -29,46 +30,77 @@ export default function DashboardScreen({ walletData, onLogout }: DashboardScree
   const [messageInput, setMessageInput] = useState('')
   const [connectedPeers, setConnectedPeers] = useState<string[]>([])
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
+  const p2pClientRef = useRef<P2PClient | null>(null)
 
   useEffect(() => {
-    // Simulate connection process
-    const timer = setTimeout(() => {
-      setConnectionStatus('connected')
-      setConnectedPeers(['12D3KooWP6VY4vsRWi73nHLCEoqDnJ674ZjP5mNUKXHELM84Jsfm'])
-      
-      // Add some demo messages
-      setMessages([
-        {
-          id: '1',
-          sender: 'artTL1jb55QE2YCXvKdiknQfwjd85Pa9gqRdU',
-          content: 'Welcome to Heart Earth network!',
-          timestamp: Date.now() - 120000
-        },
-        {
-          id: '2', 
-          sender: 'Bootstrap',
-          content: 'Connected to developer channel',
-          timestamp: Date.now() - 60000
-        }
-      ])
-    }, 2000)
+    if (!walletData) return
 
-    return () => clearTimeout(timer)
-  }, [])
+    // Initialize real P2P client
+    const client = createP2PClient({
+      peerId: walletData.peerAddress,
+      blockchainAddress: walletData.blockchainAddress
+    })
+
+    p2pClientRef.current = client
+
+    // Set up message handler
+    client.onMessage((message) => {
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        sender: message.sender,
+        content: message.data,
+        timestamp: message.timestamp
+      }])
+    })
+
+    // Set up connection handler
+    client.onConnectionChange((status) => {
+      if (status === 'connected') {
+        setConnectionStatus('connected')
+        // In a real implementation, we'd get peer list from the network
+        setConnectedPeers(['Bootstrap Node'])
+      } else if (status === 'disconnected') {
+        setConnectionStatus('disconnected')
+        setConnectedPeers([])
+      } else if (status === 'error') {
+        setConnectionStatus('disconnected')
+        setConnectedPeers([])
+      }
+    })
+
+    // Connect to P2P network
+    client.connect().catch(error => {
+      console.error('Failed to connect to P2P network:', error)
+      setConnectionStatus('disconnected')
+    })
+
+    // Cleanup on unmount
+    return () => {
+      client.disconnect()
+    }
+  }, [walletData])
+
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!messageInput.trim()) return
+    if (!messageInput.trim() || !p2pClientRef.current) return
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      sender: walletData?.blockchainAddress || 'You',
-      content: messageInput,
-      timestamp: Date.now()
+    // Send message via P2P client
+    const success = p2pClientRef.current.sendMessage(messageInput)
+    
+    if (success) {
+      // Add message to local display (it will also come back from the network)
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        sender: 'You',
+        content: messageInput,
+        timestamp: Date.now()
+      }
+      setMessages(prev => [...prev, newMessage])
+      setMessageInput('')
+    } else {
+      console.error('Failed to send message - not connected to P2P network')
     }
-
-    setMessages(prev => [...prev, newMessage])
-    setMessageInput('')
   }
 
   const formatTime = (timestamp: number) => {
@@ -146,7 +178,7 @@ export default function DashboardScreen({ walletData, onLogout }: DashboardScree
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-sm text-muted-foreground">Bootstrap Node</Label>
-                    <p className="font-mono text-sm">157.245.208.60:4001</p>
+                    <p className="font-mono text-sm">p2p.heartearth.art</p>
                   </div>
                   <div className="space-y-2">
                     <Label className="text-sm text-muted-foreground">Channel</Label>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { WalletData } from '@/app/page'
-import { SecureWallet } from '@/lib/wallet'
+import { SecureWallet } from '@/lib/secure_wallet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,24 +17,31 @@ interface CreateWalletScreenProps {
 
 export default function CreateWalletScreen({ onWalletCreated, onBack }: CreateWalletScreenProps) {
   const [step, setStep] = useState<'password' | 'mnemonic' | 'confirm'>('password')
-  const [walletName, setWalletName] = useState('default')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [mnemonic, setMnemonic] = useState('')
   const [savedMnemonic, setSavedMnemonic] = useState(false)
   const [error, setError] = useState('')
+  const [wallet] = useState(() => new SecureWallet())
 
-  const generateMnemonic = () => {
-    // Use cryptographically secure mnemonic generation
-    return SecureWallet.generateMnemonic()
+  const generateMnemonic = async () => {
+    // Initialize WASM first
+    await SecureWallet.initWASM()
+    // Use real WASM mnemonic generation
+    return await wallet.generateMnemonic()
   }
 
-  const generateAddresses = (mnemonic: string) => {
-    // Use deterministic address generation from mnemonic
-    return SecureWallet.generateAddresses(mnemonic, 0, 0)
+  const generateAddresses = async (mnemonic: string) => {
+    // Create account using WASM wallet 
+    await SecureWallet.initWASM()
+    const account = await wallet.createAccount(mnemonic, 0, 0)
+    return {
+      peerAddress: account.peer_id,
+      blockchainAddress: account.blockchain_address
+    }
   }
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -53,25 +60,32 @@ export default function CreateWalletScreen({ onWalletCreated, onBack }: CreateWa
       return
     }
 
-    const generated = generateMnemonic()
+    const generated = await generateMnemonic()
     setMnemonic(generated)
     setStep('mnemonic')
   }
 
-  const handleMnemonicConfirm = () => {
+  const handleMnemonicConfirm = async () => {
     if (!savedMnemonic) {
       setError('Please confirm you have saved your mnemonic phrase')
       return
     }
     
-    const addresses = generateAddresses(mnemonic)
-    onWalletCreated({
-      name: walletName,
-      mnemonic,
-      password,
-      peerAddress: addresses.peerAddress,
-      blockchainAddress: addresses.blockchainAddress
-    })
+    try {
+      // Actually store the wallet in IndexedDB
+      await SecureWallet.initWASM()
+      const account = await wallet.createWallet(password)
+      
+      onWalletCreated({
+        name: 'main',
+        mnemonic,
+        password,
+        peerAddress: account.peer_id,
+        blockchainAddress: account.blockchain_address
+      })
+    } catch (error) {
+      setError('Failed to create wallet: ' + (error instanceof Error ? error.message : 'Unknown error'))
+    }
   }
 
   const renderPasswordStep = () => (
@@ -84,16 +98,6 @@ export default function CreateWalletScreen({ onWalletCreated, onBack }: CreateWa
           </CardHeader>
           <CardContent>
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="wallet-name">Wallet Name</Label>
-                <Input
-                  id="wallet-name"
-                  type="text"
-                  value={walletName}
-                  onChange={(e) => setWalletName(e.target.value)}
-                  required
-                />
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password (ASCII only)</Label>
