@@ -36,9 +36,10 @@ export class SecureWallet {
     return this.createAccount(mnemonic, 0, 0)
   }
 
-  async unlockWallet(password: string): Promise<WalletAccount> {
+  async unlockWallet(password: string): Promise<WalletAccount & { mnemonic: string }> {
     const mnemonic = await this.storage.loadWallet(password)
-    return this.createAccount(mnemonic, 0, 0)
+    const account = await this.createAccount(mnemonic, 0, 0)
+    return { ...account, mnemonic }
   }
 
   async walletExists(): Promise<boolean> {

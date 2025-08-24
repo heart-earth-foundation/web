@@ -49,7 +49,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
       
       onLogin({
         name: 'main',
-        mnemonic: account.blockchain_address, // Don't expose mnemonic in state
+        mnemonic: account.mnemonic, // Need actual mnemonic for P2P message signing
         password,
         peerAddress: account.peer_id,
         blockchainAddress: account.blockchain_address
