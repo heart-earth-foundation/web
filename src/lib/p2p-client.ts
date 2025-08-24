@@ -286,6 +286,7 @@ export class P2PClient {
 
       const keyMessage = {
         type: 'key_announcement',
+        topic: this.config.channel,
         data: this.ourX25519Key.public_key,
         signature: signature,
         sender: this.config.peerInfo.peerId
