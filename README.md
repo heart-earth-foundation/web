@@ -7,7 +7,7 @@ A minimal Next.js TypeScript frontend for the Heart Earth P2P blockchain network
 - **Wallet Creation**: Generate 12-word mnemonic with encrypted storage
 - **Login Flow**: Secure wallet authentication 
 - **Dashboard**: Account info, P2P chat, and settings
-- **Real-time Chat**: Gossipsub messaging on `/art/dev/general/v1` channel
+- **Real-time Chat**: Gossipsub messaging with end-to-end encryption
 - **Network Info**: Connected peers and bootstrap node status
 
 ## Quick Start
@@ -24,10 +24,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Architecture
 
-Based on the Heart Earth Rust implementation:
+Integrates with Heart Earth Rust backend via WebAssembly:
 - **Wallet**: HD wallet with secp256k1 (blockchain) + ed25519 (P2P) derivation
-- **P2P**: libp2p networking with Gossipsub + Kademlia DHT
-- **Bootstrap**: Connects to P2P network via WebSocket
+- **P2P**: libp2p networking with WebSocket transport
+- **Encryption**: X25519 key exchange with AES-256-GCM message encryption
 
 ## Flow
 
@@ -36,4 +36,4 @@ Based on the Heart Earth Rust implementation:
 3. **Login** → Enter password → Dashboard
 4. **Dashboard** → Account info, gossip chat, settings
 
-This frontend simulates the wallet/p2p functionality for demonstration. For production, integrate with the actual Rust backend via WebAssembly or API.
+Frontend uses WebAssembly bindings to the Rust wallet and p2p crates.
