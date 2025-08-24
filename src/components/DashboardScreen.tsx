@@ -81,12 +81,12 @@ export default function DashboardScreen({ walletData, onLogout }: DashboardScree
   }, [walletData])
 
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!messageInput.trim() || !p2pClientRef.current) return
+    if (!messageInput.trim() || !p2pClientRef.current || !walletData?.mnemonic) return
 
     // Send message via P2P client
-    const success = p2pClientRef.current.sendMessage(messageInput)
+    const success = await p2pClientRef.current.sendMessage(messageInput, walletData.mnemonic)
     
     if (success) {
       // Add message to local display (it will also come back from the network)

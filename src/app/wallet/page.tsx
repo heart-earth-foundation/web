@@ -1,5 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Wallet, Key, Network, Shield, Code, Users, Globe, ArrowRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Wallet,
+  Key,
+  Network,
+  Shield,
+  Code,
+  Users,
+  Globe,
+  ArrowRight,
+} from "lucide-react";
 
 export default function WalletPage() {
   return (
@@ -9,13 +18,16 @@ export default function WalletPage() {
           <Wallet className="h-16 w-16 text-primary mx-auto" />
           <h1 className="text-4xl font-bold">Heart Earth Unified Wallet</h1>
           <p className="text-xl text-muted-foreground">
-            Single 12-word mnemonic generates Heart blockchain accounts and Earth P2P identities
+            Single 12-word mnemonic generates Heart blockchain accounts and
+            Earth P2P identities
           </p>
           <p className="text-sm text-muted-foreground">
-            Heart accounts hold ART tokens and execute blockchain transactions • Earth identities provide P2P network authentication and messaging
+            Heart accounts hold ART tokens and execute blockchain transactions •
+            Earth identities provide P2P network authentication and messaging
           </p>
           <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md text-sm">
-            Same seed index produces linked Heart address and Earth peer ID for unified identity management
+            Same seed index produces linked Heart address and Earth peer ID for
+            unified identity management
           </div>
         </div>
 
@@ -32,7 +44,9 @@ export default function WalletPage() {
                 <div className="font-mono text-sm bg-yellow-100 dark:bg-yellow-900/20 p-2 rounded mb-2">
                   12-word mnemonic
                 </div>
-                <div className="text-xs text-muted-foreground">Single backup phrase</div>
+                <div className="text-xs text-muted-foreground">
+                  Single backup phrase
+                </div>
               </div>
               <ArrowRight className="h-6 w-6 text-primary mx-auto" />
               <div className="text-center space-y-2">
@@ -42,7 +56,9 @@ export default function WalletPage() {
                 <div className="font-mono text-xs bg-green-100 dark:bg-green-900/20 p-1 rounded">
                   12D3KooWxyz...
                 </div>
-                <div className="text-xs text-muted-foreground">Linked accounts from same index</div>
+                <div className="text-xs text-muted-foreground">
+                  Linked accounts from same index
+                </div>
               </div>
             </div>
           </CardContent>
@@ -64,11 +80,14 @@ export default function WalletPage() {
                 <li>• Derivation: BIP44 path m/44'/0'/account/0/index</li>
                 <li>• Cryptography: secp256k1 elliptic curve</li>
                 <li>• Purpose: ART token transactions and smart contracts</li>
-                <li>• Address format: Custom heart_ prefix with base58 encoding</li>
+                <li>
+                  • Address format: Custom heart prefix with base58 encoding
+                </li>
                 <li>• Token compatibility: Holds and transfers ART tokens</li>
               </ul>
               <div className="mt-2 text-xs text-muted-foreground">
-                Rebranded from art_ prefix to align with Heart Earth project branding
+                Rebranded from art_ prefix to align with Heart Earth project
+                branding
               </div>
             </CardContent>
           </Card>
@@ -89,7 +108,9 @@ export default function WalletPage() {
                 <li>• Cryptography: Ed25519 signature scheme</li>
                 <li>• Purpose: P2P network participation and messaging</li>
                 <li>• Format: Standard libp2p CIDv0 multihash</li>
-                <li>• Network role: Peer discovery and gossipsub communication</li>
+                <li>
+                  • Network role: Peer discovery and gossipsub communication
+                </li>
               </ul>
               <div className="mt-2 text-xs text-muted-foreground">
                 Uses standard libp2p format for network compatibility
@@ -102,13 +123,17 @@ export default function WalletPage() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Code className="h-5 w-5" />
-              <span>Complete Signing Matrix - Both Accounts Support Both Methods</span>
+              <span>
+                Complete Signing Matrix - Both Accounts Support Both Methods
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold mb-3 text-red-600">Heart Account Signing Powers</h4>
+                <h4 className="font-semibold mb-3 text-red-600">
+                  Heart Account Signing Powers
+                </h4>
                 <div className="space-y-3">
                   <div>
                     <div className="font-medium text-sm">AccountAuthSigner</div>
@@ -120,7 +145,9 @@ export default function WalletPage() {
                     </ul>
                   </div>
                   <div>
-                    <div className="font-medium text-sm">AccountStructuredSigner</div>
+                    <div className="font-medium text-sm">
+                      AccountStructuredSigner
+                    </div>
                     <ul className="space-y-1 text-xs text-muted-foreground ml-2">
                       <li>• EIP-712 style typed data</li>
                       <li>• Transfer request signing</li>
@@ -131,7 +158,9 @@ export default function WalletPage() {
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold mb-3 text-green-600">Earth Identity Signing Powers</h4>
+                <h4 className="font-semibold mb-3 text-green-600">
+                  Earth Identity Signing Powers
+                </h4>
                 <div className="space-y-3">
                   <div>
                     <div className="font-medium text-sm">P2PAuthSigner</div>
@@ -143,7 +172,9 @@ export default function WalletPage() {
                     </ul>
                   </div>
                   <div>
-                    <div className="font-medium text-sm">P2PStructuredSigner</div>
+                    <div className="font-medium text-sm">
+                      P2PStructuredSigner
+                    </div>
                     <ul className="space-y-1 text-xs text-muted-foreground ml-2">
                       <li>• P2P protocol data signing</li>
                       <li>• Service authorization requests</li>
@@ -155,9 +186,13 @@ export default function WalletPage() {
               </div>
             </div>
             <div className="mt-4 bg-orange-50 dark:bg-orange-900/20 p-3 rounded-md">
-              <div className="font-medium text-sm mb-1">Domain Separation Security</div>
+              <div className="font-medium text-sm mb-1">
+                Domain Separation Security
+              </div>
               <div className="text-xs text-muted-foreground">
-                Different cryptographic contexts prevent signature reuse attacks. Heart signatures cannot be used for Earth operations and vice versa.
+                Different cryptographic contexts prevent signature reuse
+                attacks. Heart signatures cannot be used for Earth operations
+                and vice versa.
               </div>
             </div>
           </CardContent>
@@ -174,7 +209,8 @@ export default function WalletPage() {
             <div>
               <h4 className="font-semibold mb-2">.earth Domain System</h4>
               <p className="text-sm text-muted-foreground mb-3">
-                Register human-readable names that resolve to both your Heart blockchain address and Earth peer ID.
+                Register human-readable names that resolve to both your Heart
+                blockchain address and Earth peer ID.
               </p>
               <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md font-mono text-sm">
                 <div className="mb-2">username.earth resolves to:</div>
@@ -189,7 +225,10 @@ export default function WalletPage() {
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li>• P2P chat shows "alice.earth" instead of peer ID</li>
                 <li>• Blockchain transactions resolve to readable names</li>
-                <li>• Cross-platform identity without revealing technical addresses</li>
+                <li>
+                  • Cross-platform identity without revealing technical
+                  addresses
+                </li>
                 <li>• Fallback to raw addresses when names unavailable</li>
               </ul>
             </div>
@@ -279,15 +318,25 @@ export default function WalletPage() {
           <CardContent>
             <div className="space-y-3">
               <div>
-                <div className="font-semibold text-sm mb-1">ART Token Distribution</div>
+                <div className="font-semibold text-sm mb-1">
+                  ART Token Distribution
+                </div>
                 <ul className="space-y-1 text-sm text-muted-foreground">
                   <li>• Heart accounts: Hold and transfer ART tokens</li>
-                  <li>• Earth identities: Network participation only (no token balance required)</li>
-                  <li>• Unified ownership: Same mnemonic controls both account types</li>
+                  <li>
+                    • Earth identities: Network participation only (no token
+                    balance required)
+                  </li>
+                  <li>
+                    • Unified ownership: Same mnemonic controls both account
+                    types
+                  </li>
                 </ul>
               </div>
               <div>
-                <div className="font-semibold text-sm mb-1">Cross-Account Design Rationale</div>
+                <div className="font-semibold text-sm mb-1">
+                  Cross-Account Design Rationale
+                </div>
                 <ul className="space-y-1 text-sm text-muted-foreground">
                   <li>• Simplified architecture: Single mnemonic backup</li>
                   <li>• Clear separation: Financial vs network identity</li>
@@ -297,8 +346,7 @@ export default function WalletPage() {
             </div>
           </CardContent>
         </Card>
-
       </div>
     </div>
-  )
+  );
 }

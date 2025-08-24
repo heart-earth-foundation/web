@@ -7,6 +7,8 @@ declare global {
       generate_mnemonic(): string
       create_account(mnemonic: string, account: number, index: number): string
       create_p2p_connection(mnemonic: string, account: number, index: number): string
+      sign_p2p_message(mnemonic: string, account_number: number, index: number, domain: string, blockchain_address: string, origin: string, message_content?: string): string
+      create_simple_nonce(): string
     }
   }
 }
@@ -20,12 +22,12 @@ export interface WalletAccount {
 
 export class SecureWallet {
   private storage = new SecureWalletStorage()
+  private static wasmInitialized = false
+  private static wasmInitPromise: Promise<void> | null = null
 
   async generateMnemonic(): Promise<string> {
-    if (!window.wasm) {
-      throw new Error('WASM module not loaded')
-    }
-    return window.wasm.generate_mnemonic()
+    await SecureWallet.ensureWASMLoaded()
+    return window.wasm!.generate_mnemonic()
   }
 
   async createWallet(password: string): Promise<WalletAccount> {
@@ -48,11 +50,8 @@ export class SecureWallet {
   }
 
   async createAccount(mnemonic: string, account_number: number = 0, index: number = 0): Promise<WalletAccount> {
-    if (!window.wasm) {
-      throw new Error('WASM module not loaded')
-    }
-
-    const result = window.wasm.create_account(mnemonic, account_number, index)
+    await SecureWallet.ensureWASMLoaded()
+    const result = window.wasm!.create_account(mnemonic, account_number, index)
     return JSON.parse(result)
   }
 
@@ -61,28 +60,66 @@ export class SecureWallet {
     blockchain_address: string
     status: string
   }> {
-    if (!window.wasm) {
-      throw new Error('WASM module not loaded')
-    }
-
-    const result = window.wasm.create_p2p_connection(mnemonic, account_number, index)
+    await SecureWallet.ensureWASMLoaded()
+    const result = window.wasm!.create_p2p_connection(mnemonic, account_number, index)
     return JSON.parse(result)
   }
 
-  static async initWASM(): Promise<void> {
+  async signP2PMessage(
+    mnemonic: string, 
+    domain: string, 
+    origin: string, 
+    messageContent?: string,
+    account_number: number = 0, 
+    index: number = 0
+  ): Promise<any> {
+    await SecureWallet.ensureWASMLoaded()
+    const account = await this.createAccount(mnemonic, account_number, index)
+    const result = window.wasm!.sign_p2p_message(
+      mnemonic, 
+      account_number, 
+      index, 
+      domain, 
+      account.blockchain_address, 
+      origin, 
+      messageContent
+    )
+    return JSON.parse(result)
+  }
+
+  static async ensureWASMLoaded(): Promise<void> {
+    if (SecureWallet.wasmInitialized) {
+      return
+    }
+
+    if (SecureWallet.wasmInitPromise) {
+      return SecureWallet.wasmInitPromise
+    }
+
+    SecureWallet.wasmInitPromise = SecureWallet.initWASM()
+    return SecureWallet.wasmInitPromise
+  }
+
+  private static async initWASM(): Promise<void> {
     try {
-      // This will be implemented when we copy WASM package
+      console.log('Initializing WASM module...')
       const wasmModule = await import('../../wasm-pkg')
       await wasmModule.default()
       
       window.wasm = {
         generate_mnemonic: wasmModule.generate_mnemonic,
         create_account: wasmModule.create_account,
-        create_p2p_connection: wasmModule.create_p2p_connection
+        create_p2p_connection: wasmModule.create_p2p_connection,
+        sign_p2p_message: wasmModule.sign_p2p_message,
+        create_simple_nonce: wasmModule.create_simple_nonce
       }
+      
+      SecureWallet.wasmInitialized = true
+      console.log('WASM module initialized successfully')
     } catch (error) {
+      SecureWallet.wasmInitPromise = null // Reset on failure
       console.error('Failed to initialize WASM:', error)
-      throw new Error('WASM initialization failed')
+      throw new Error('WASM initialization failed: ' + (error as Error).message)
     }
   }
 }

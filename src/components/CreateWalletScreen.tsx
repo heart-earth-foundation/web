@@ -25,15 +25,12 @@ export default function CreateWalletScreen({ onWalletCreated, onBack }: CreateWa
   const [wallet] = useState(() => new SecureWallet())
 
   const generateMnemonic = async () => {
-    // Initialize WASM first
-    await SecureWallet.initWASM()
-    // Use real WASM mnemonic generation
+    // WASM initialization now handled automatically in generateMnemonic()
     return await wallet.generateMnemonic()
   }
 
   const generateAddresses = async (mnemonic: string) => {
-    // Create account using WASM wallet 
-    await SecureWallet.initWASM()
+    // WASM initialization now handled automatically in createAccount()
     const account = await wallet.createAccount(mnemonic, 0, 0)
     return {
       peerAddress: account.peer_id,
@@ -72,8 +69,8 @@ export default function CreateWalletScreen({ onWalletCreated, onBack }: CreateWa
     }
     
     try {
-      // Actually store the wallet in IndexedDB
-      await SecureWallet.initWASM()
+      // Actually store the wallet in IndexedDB  
+      // WASM initialization now handled automatically in createWallet()
       const account = await wallet.createWallet(password)
       
       onWalletCreated({

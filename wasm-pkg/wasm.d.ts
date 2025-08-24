@@ -5,6 +5,8 @@ export function greet(name: string): string;
 export function generate_mnemonic(): string;
 export function create_account(mnemonic: string, account_number: number, index: number): string;
 export function create_p2p_connection(mnemonic: string, account_number: number, index: number): string;
+export function sign_p2p_message(mnemonic: string, account_number: number, index: number, domain: string, blockchain_address: string, origin: string, message_content?: string | null): string;
+export function create_simple_nonce(): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -15,6 +17,8 @@ export interface InitOutput {
   readonly generate_mnemonic: () => [number, number, number, number];
   readonly create_account: (a: number, b: number, c: number, d: number) => [number, number, number, number];
   readonly create_p2p_connection: (a: number, b: number, c: number, d: number) => [number, number, number, number];
+  readonly sign_p2p_message: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number) => [number, number, number, number];
+  readonly create_simple_nonce: () => [number, number, number, number];
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __externref_table_alloc: () => number;
   readonly __wbindgen_export_2: WebAssembly.Table;

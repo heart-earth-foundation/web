@@ -55,20 +55,33 @@ export class P2PClient {
     })
   }
 
-  sendMessage(content: string): boolean {
+  async sendMessage(content: string, mnemonic: string): Promise<boolean> {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
       console.error('P2P connection not ready')
       return false
     }
 
-    const message = {
-      type: 'publish',
-      topic: this.config.channel,
-      data: `[${this.config.peerInfo.blockchainAddress}]: ${content}`,
-      sender: this.config.peerInfo.peerId
-    }
-
     try {
+      // Import SecureWallet for signing
+      const { SecureWallet } = await import('./secure_wallet')
+      const wallet = new SecureWallet()
+      
+      // Sign the message with P2P authentication
+      const signature = await wallet.signP2PMessage(
+        mnemonic,
+        'p2p.heartearth.art',
+        'https://p2p.heartearth.art',
+        content
+      )
+
+      const message = {
+        type: 'publish',
+        topic: this.config.channel,
+        data: content,
+        signature: signature,
+        sender: this.config.peerInfo.peerId
+      }
+
       this.socket.send(JSON.stringify(message))
       return true
     } catch (error) {

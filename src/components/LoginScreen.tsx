@@ -22,8 +22,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
   const [wallet] = useState(() => new SecureWallet())
 
   const generateAddresses = async (mnemonic: string) => {
-    // Create account using WASM wallet 
-    await SecureWallet.initWASM()
+    // WASM initialization now handled automatically in createAccount()
     const account = await wallet.createAccount(mnemonic, 0, 0)
     return {
       peerAddress: account.peer_id,
