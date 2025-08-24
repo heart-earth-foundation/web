@@ -68,8 +68,8 @@ export default function DashboardScreen({ walletData, onLogout }: DashboardScree
       }
     })
 
-    // Connect to P2P network
-    client.connect().catch(error => {
+    // Connect to P2P network with mnemonic for encryption
+    client.connect(walletData.mnemonic).catch(error => {
       console.error('Failed to connect to P2P network:', error)
       setConnectionStatus('disconnected')
     })
