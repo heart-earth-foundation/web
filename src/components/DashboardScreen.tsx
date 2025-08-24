@@ -85,18 +85,10 @@ export default function DashboardScreen({ walletData, onLogout }: DashboardScree
     e.preventDefault()
     if (!messageInput.trim() || !p2pClientRef.current || !walletData?.mnemonic) return
 
-    // Send message via P2P client
+    // Send message via P2P client - it will come back from the network if successful
     const success = await p2pClientRef.current.sendMessage(messageInput, walletData.mnemonic)
     
     if (success) {
-      // Add message to local display (it will also come back from the network)
-      const newMessage: Message = {
-        id: Date.now().toString(),
-        sender: 'You',
-        content: messageInput,
-        timestamp: Date.now()
-      }
-      setMessages(prev => [...prev, newMessage])
       setMessageInput('')
     } else {
       console.error('Failed to send message - not connected to P2P network')
